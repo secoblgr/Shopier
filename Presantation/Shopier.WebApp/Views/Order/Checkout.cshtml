@@ -1,0 +1,163 @@
+﻿@using Shopier.Application.Dtos.CartDtos
+@model GetByIdCartDto
+
+<!-- Checkout Start -->
+<div class="container-fluid pt-5">
+    <div class="row px-xl-5">
+        <div class="col-lg-8">
+            <div class="mb-4">
+                <h4 class="font-weight-semi-bold mb-4">Billing Address</h4>
+                <div class="row">
+                    <div class="col-md-6 form-group">
+                        <label>First Name</label>
+                        <input class="form-control" type="text" placeholder="John" name="customerName" id="customerName" required>
+                    </div>
+                    <div class="col-md-6 form-group">
+                        <label>Last Name</label>
+                        <input class="form-control" type="text" placeholder="Doe" name="customerSurname" id="customerSurname" required>
+                    </div>
+                    <div class="col-md-6 form-group">
+                        <label>E-mail</label>
+                        <input class="form-control" type="text" placeholder="example@email.com" name="customerEmail" id="customerEmail" required>
+                    </div>
+                    <div class="col-md-6 form-group">
+                        <label>Mobile No</label>
+                        <input class="form-control" type="text" placeholder="+5XX XXX XXX" name="customerPhone" id="customerPhone" required>
+                    </div>
+
+                    <div class="col-md-6 form-group">
+                        <label>Country</label>
+                        <select class="custom-select" id="city" name="city" required>
+                            <option selected id="city" ></option>
+                        </select>
+                    </div>
+                    <div class="col-md-6 form-group">
+                        <label>Town</label>
+                        <select class="custom-select" id="town" name="town" required>
+                            <option selected id="town"></option>
+                        </select>
+                    </div>
+                    <div class="col-md-12 form-group">
+                        <label>Address Detail</label>
+                        <input class="form-control" type="text" placeholder="" name="shippingAdress" id="shippingAdress" required>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4">
+            <div class="card border-secondary mb-5">
+                <div class="card-header bg-secondary border-0">
+                    <h4 class="font-weight-semi-bold m-0">Order Total</h4>
+                </div>
+                <div class="card-body">
+                    <h5 class="font-weight-medium mb-3">Products</h5>
+                    @foreach (var item in Model.CartItems)
+                    {
+                        <div class="d-flex justify-content-between">
+                            <p>@item.Product.ProductName</p>
+                            <p>$@item.TotalPrice</p>
+                        </div>
+                    }
+                    <hr class="mt-0">
+                </div>
+                <div class="card-footer border-secondary bg-transparent">
+                    <div class="d-flex justify-content-between mt-2">
+                        <h5 class="font-weight-bold">Total</h5>
+                        <h5 class="font-weight-bold">$@Model.TotalAmount</h5>
+                    </div>
+                </div>
+            </div>
+            <div class="card border-secondary mb-5">
+                <div class="card-footer border-secondary bg-transparent">
+                    <button class="btn btn-lg btn-block btn-primary font-weight-bold my-3 py-3" id="completeOrder">Place Order</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Checkout End -->
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<script>
+    $(document).ready(function() {
+          $.ajax ({
+              url:"/order/getcity",
+              type:"GET",
+              dataType:"json",
+              success:function(data) {
+                  console.log(data.data)
+                  var cityDropDown = $('#city');
+                  cityDropDown.empty();
+                  cityDropDown.append('<option selected value = "0"> City </option>');
+                  $.each(data.data, function(index,city){
+                      cityDropDown.append($('<option></option>').attr('value', city.cityId).text(city.cityName));
+                  });
+              },
+              ReferenceError : function(xhr,status,error) {
+                  console.log("error");
+              }
+          });
+
+              $('#city').change(function () {
+                var cityId = $(this).val();
+                console.log(cityId);
+                if (cityId != "0") {
+                    $.ajax({
+                        url: '/Order/GetTownByCityId?cityId='+cityId,
+                        type: 'GET',
+                        dataType: 'json',
+                        success: function (data) {
+                            console.log(data);
+                            var townDropdown = $('#town');
+                            townDropdown.empty();
+                            townDropdown.append('<option selected value="0">İlçe Seçiniz.</option>');
+                            $.each(data.data, function (index, town) {
+                                townDropdown.append($('<option></option>').attr('value', town.townId).text(town.townName));
+                            });
+                        },
+                        error: function (xhr, status, error) {
+                            console.log('İlçeler yüklenirken bir hata oluştu: ' + error);
+                        }
+                    });
+                } else {
+                    $('#town').empty();
+                    $('#town').append('<option selected value="0">İlçe Seçiniz.</option>');
+                }
+            });
+
+
+            $('#completeOrder').click(function (e) {
+            e.preventDefault();
+            var orderData = {
+                customerName: $('#customerName').val(),
+                customerSurname: $('#customerSurname').val(),
+                customerEmail: $('#customerEmail').val(),
+                customerPhone: $('#customerPhone').val(),
+                shippingCityId: parseInt( $('#city').val()),
+                shippingTownId: parseInt( $('#town').val()),
+                shippingAdress: $('#shippingAdress').val(),
+                totalAmount: '@Model.TotalAmount'  // Assuming this is coming from your model
+            };
+            var cartId = @Model.CartId
+
+            $.ajax({
+                type: 'POST',
+                url: '/Order/CreateOrder',  // Replace with your controller's name
+                data: {dto:orderData,cartId:cartId},
+                dataType: 'json',
+                success: function (response) {
+                    alert('Siparisiniz basarili bir sekilde olusturuldu!');
+                    window.location.href = '@Url.Action("Index", "Home")';
+                },
+
+                error: function (response) {
+                    console.log(response)
+                    alert('Error placing order.');
+                }
+            });
+                console.log(orderData)
+        });
+      });
+
+</script>
