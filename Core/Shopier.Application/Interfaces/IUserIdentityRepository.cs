@@ -11,8 +11,8 @@ namespace Shopier.Application.Interfaces
     {
         Task<string> LoginAsync(LoginDto dto);
         Task<string> RegisterAsync(RegisterDto dto);
-        Task<string> ChangePassword();
-        Task Logout();
+        Task<string> ChangePasswordAsync();
+        Task LogoutAsync();
 
     }
 }

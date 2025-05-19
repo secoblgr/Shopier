@@ -1,5 +1,7 @@
-﻿using Shopier.Application.Dtos.AccountDtos;
+﻿using Microsoft.AspNetCore.Identity;
+using Shopier.Application.Dtos.AccountDtos;
 using Shopier.Application.Interfaces;
+using Shopier.Persistence.Context.Identity;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,24 +12,71 @@ namespace Shopier.Persistence.Repositories
 {
     public class UserIdentityRepository : IUserIdentityRepository
     {
-        Task<string> IUserIdentityRepository.ChangePassword()
+        private readonly UserManager<AppIdentityUser> _userManager;
+        private readonly SignInManager<AppIdentityUser> _signInManager;
+        public UserIdentityRepository(UserManager<AppIdentityUser> userManager, SignInManager<AppIdentityUser> signInManager)
+        {
+            _userManager = userManager;
+            _signInManager = signInManager;
+        }
+
+        Task<string> IUserIdentityRepository.ChangePasswordAsync()
         {
             throw new NotImplementedException();
         }
 
-        Task<string> IUserIdentityRepository.LoginAsync(LoginDto dto)
+        async Task<string> IUserIdentityRepository.LoginAsync(LoginDto dto)
         {
-            throw new NotImplementedException();
+            var user = await _userManager.FindByEmailAsync(dto.Email);  // kullanıcı var mı
+            if (user == null)
+            {
+                return "User dont exist";
+            }
+            var result = await _signInManager.PasswordSignInAsync(dto.Email, dto.Password, true, false);
+            if (result.Succeeded)
+            {
+                return "Login succes";
+            }
+            if (result.IsLockedOut)
+            {
+                return "user locked";
+            }
+            if (result.IsNotAllowed)
+            {
+                return "Dont have permission";
+            }
+            if (result.RequiresTwoFactor)
+            {
+                return "Two factor check required";
+            }
+            return "Login error";
         }
 
-        Task IUserIdentityRepository.Logout()
+        async Task IUserIdentityRepository.LogoutAsync()
         {
-            throw new NotImplementedException();
+            await _signInManager.SignOutAsync();
         }
 
-        Task<string> IUserIdentityRepository.RegisterAsync(RegisterDto dto)
+        async Task<string> IUserIdentityRepository.RegisterAsync(RegisterDto dto)
         {
-            throw new NotImplementedException();
+            if (dto.Password != dto.RePassword)
+            {
+                return "Passwords does not match!";
+            }
+
+            var user = new AppIdentityUser{
+                   FirstName = dto.Name,
+                   LastName = dto.Surname,
+                   UserName = dto.Email,
+                   Email = dto.Email,
+                   PhoneNumber =dto.Phone,
+            };
+            var result = await _userManager.CreateAsync(user);
+            if (result.Succeeded)
+            {
+                return "User Created";
+            }
+            return result.Errors.ToString();
         }
     }
 }
