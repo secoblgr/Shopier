@@ -109,7 +109,7 @@
                         <a href="/product/index?categoryId=9" class="nav-item nav-link">Computers & Accessories</a>
                         <a href="/product/index?categoryId=10" class="nav-item nav-link">Mobile Phones & Accessories</a>
 
-                      
+
                     </div>
                 </nav>
             </div>
@@ -128,10 +128,22 @@
                             <a href="#" class="nav-item nav-link">Shop Detail</a>
                             <a href="#" class="nav-item nav-link">Contact</a>
                         </div>
-                        <div class="navbar-nav ml-auto py-0">
-                            <a href="/Account/Login" class="nav-item nav-link">Login</a>
-                            <a href="/Account/Register" class="nav-item nav-link">Register</a>
-                        </div>
+                        @{
+                            if(User.Identity.Name == null)
+                            {
+                                <div class="navbar-nav ml-auto py-0">
+                                    <a href="/Account/Login" class="nav-item nav-link">Login</a>
+                                    <a href="/Account/Register" class="nav-item nav-link">Register</a>
+                                </div>
+                            }
+                            else
+                            {
+                                <div class="navbar-nav ml-auto py-0">
+                                    <a href="/Account/Profile" class="nav-item nav-link">Profile</a>
+                                    <a href="/Account/Logout" class="nav-item nav-link">Logout</a>
+                                </div>
+                            }
+                        }
                     </div>
                 </nav>
                 <div id="header-carousel" class="carousel slide" data-ride="carousel">

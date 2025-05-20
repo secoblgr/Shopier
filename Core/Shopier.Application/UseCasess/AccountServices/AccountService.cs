@@ -17,23 +17,23 @@ namespace Shopier.Application.UseCasess.AccountServices
             _userIdentityRepository = userIdentityRepository;
         }
 
-        Task<string> IAccountService.ChangePassword()
+        public async Task<string> ChangePassword()
         {
             throw new NotImplementedException();
         }
 
-        async Task<string> IAccountService.Login(LoginDto dto)
+        public async Task<string> Login(LoginDto dto)
         {
             var result = await _userIdentityRepository.LoginAsync(dto);
             return result;
         }
 
-        async Task IAccountService.Logout()
+        public async Task Logout()
         {
             await _userIdentityRepository.LogoutAsync();
         }
 
-        async Task<string> IAccountService.Register(RegisterDto dto)
+        public async Task<string> Register(RegisterDto dto)
         {
             var result = await _userIdentityRepository.RegisterAsync(dto);
             return result;

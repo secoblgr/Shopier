@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Shopier.Application.Interfaces;
+using Shopier.Application.UseCasess.AccountServices;
 using Shopier.Application.UseCasess.CartItemServices;
 using Shopier.Application.UseCasess.CartServices;
 using Shopier.Application.UseCasess.CategoryServices;
@@ -26,6 +27,10 @@ builder.Services.AddScoped<IOrderItemService, OrderItemService>();
 builder.Services.AddScoped<IProductService, ProductService>();
 builder.Services.AddScoped<ICartService, CartService>();
 builder.Services.AddScoped<ICartItemService, CartItemService>();
+builder.Services.AddScoped<IAccountService, AccountService>();
+builder.Services.AddScoped<IUserIdentityRepository, UserIdentityRepository>();
+
+
 builder.Services.AddDbContext<AppIdentityDbContext>(options =>
 {
     var configuration = builder.Configuration;

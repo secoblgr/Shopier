@@ -20,12 +20,12 @@ namespace Shopier.Persistence.Repositories
             _signInManager = signInManager;
         }
 
-        Task<string> IUserIdentityRepository.ChangePasswordAsync()
+        public Task<string> ChangePasswordAsync()
         {
             throw new NotImplementedException();
         }
 
-        async Task<string> IUserIdentityRepository.LoginAsync(LoginDto dto)
+        public async Task<string> LoginAsync(LoginDto dto)
         {
             var user = await _userManager.FindByEmailAsync(dto.Email);  // kullanıcı var mı
             if (user == null)
@@ -39,7 +39,7 @@ namespace Shopier.Persistence.Repositories
             }
             if (result.IsLockedOut)
             {
-                return "user locked";
+                return "User locked";
             }
             if (result.IsNotAllowed)
             {
@@ -49,32 +49,34 @@ namespace Shopier.Persistence.Repositories
             {
                 return "Two factor check required";
             }
-            return "Login error";
+            return "Email or Password not true !";
         }
 
-        async Task IUserIdentityRepository.LogoutAsync()
+        public async Task LogoutAsync()
         {
             await _signInManager.SignOutAsync();
         }
 
-        async Task<string> IUserIdentityRepository.RegisterAsync(RegisterDto dto)
+        public async Task<string> RegisterAsync(RegisterDto dto)
         {
             if (dto.Password != dto.RePassword)
             {
                 return "Passwords does not match!";
             }
 
-            var user = new AppIdentityUser{
-                   FirstName = dto.Name,
-                   LastName = dto.Surname,
-                   UserName = dto.Email,
-                   Email = dto.Email,
-                   PhoneNumber =dto.Phone,
+            var user = new AppIdentityUser
+            {
+                FirstName = dto.Name,
+                LastName = dto.Surname,
+                Email = dto.Email,
+                PhoneNumber = dto.Phone,
+                UserName = dto.Email,
             };
-            var result = await _userManager.CreateAsync(user);
+            var result = await _userManager.CreateAsync(user, dto.Password);
+
             if (result.Succeeded)
             {
-                return "User Created";
+                return "User Created Succesfully!";
             }
             return result.Errors.ToString();
         }

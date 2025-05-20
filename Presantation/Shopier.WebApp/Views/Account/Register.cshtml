@@ -1,40 +1,36 @@
 ﻿@{
     Layout = null;
 }
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
 
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Login</title>
-</head>
-<body>
+
     <div class="container">
         <div class="screen">
             <div class="screen__content">
-                <form class="login" action="/account/register">
+                <form class="login" action="/account/register" method="post" >
                     <div class="login__field">
                         <i class="login__icon fas fa-user"></i>
-                        <input type="text" class="login__input" placeholder="Name" required name="name">
+                        <input type="text" class="login__input" placeholder="Name" required name="Name">
                     </div>
                     <div class="login__field">
                         <i class="login__icon fas fa-user"></i>
-                        <input type="text" class="login__input" placeholder="Surname" required name="surname">
+                        <input type="text" class="login__input" placeholder="Surname" required name="Surname">
                     </div>
                     <div class="login__field">
                         <i class="login__icon fas fa-user"></i>
-                        <input type="text" class="login__input" placeholder="Email" required name="email">
+                        <input type="text" class="login__input" placeholder="Email" required name="Email">
                     </div>
                     <div class="login__field">
                         <i class="login__icon fas fa-user"></i>
-                        <input type="text" class="login__input" placeholder="Phone" required name="phone">
+                        <input type="text" class="login__input" placeholder="Phone" required name="Phone">
                     </div>
                     <div class="login__field">
                         <i class="login__icon fas fa-lock"></i>
-                        <input type="password" class="login__input" placeholder="Password" required name="password">
+                        <input type="password" class="login__input" placeholder="Password" required name="Password">
                     </div>
                     <div class="login__field">
                         <i class="login__icon fas fa-lock"></i>
-                        <input type="password" class="login__input" placeholder="Password Check" required name="repassword">
+                        <input type="password" class="login__input" placeholder="Password Check" required name="RePassword">
                     </div>
                     <button class="button login__submit" type="submit">
                         <span class="button__text">Register </span>
@@ -54,8 +50,7 @@
             </div>
         </div>
     </div>
-</body>
-</html>
+
 
 <style>
 
@@ -172,7 +167,7 @@
 
     .login {
         width: 320px;
-        padding: 30px;
+        padding-left :20px;
     }
 
     .login__field {
